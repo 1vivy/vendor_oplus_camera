@@ -18,11 +18,14 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/framework/androidx.camera.extensions.impl.jar:$(TARGET_COPY_OUT_SYSTEM_EXT)/framework/androidx.camera.extensions.impl.jar \
     $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml
 
-# Stub classes needed by the OPlus camera shared libraries.
+# OPlus camera framework wrapper stubs (com.oplus.wrapper.*, OplusHeifWriter, etc.).
+# Shipped as a regular system_ext/framework shared library (NOT a boot jar) and pulled
+# into OplusCamera's classloader via <uses-library> (declared in privapp-permissions-oplus.xml,
+# injected into the app manifest by the uses-library fixup in extract-files.py).
+# Keeping it OFF PRODUCT_BOOT_JARS avoids baking app-only stubs into boot.art — a
+# boot-image dex2oat/verification failure there fails zygote/system_server = bootloop —
+# and scopes the wrapper classes to just the app that needs them.
 PRODUCT_PACKAGES += \
-    oplus-camera-stubs
-
-PRODUCT_BOOT_JARS += \
     oplus-camera-stubs
 
 # Gallery's ODNN retouch path dlopens QNN libraries by basename. Install the
@@ -78,10 +81,12 @@ PRODUCT_PRODUCT_PROPERTIES += \
     persist.logd.log.load.vendor.qti.camera.provider-service_64.upper_limit=1500 \
 
 PRODUCT_VENDOR_PROPERTIES += \
-    ro.camera.enableCamera1MaxZsl=1
+    ro.camera.enableCamera1MaxZsl=1 \
+    ro.vendor.oplus.camera.backCamSize=50MP+50MP+50MP \
+    ro.vendor.oplus.camera.frontCamSize=32MP
 
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
-    ro.build.version.oplus.api=37 \
+    ro.build.version.oplus.api=38 \
     ro.build.version.oplus.sub_api=28 \
     ro.vendor.oplus.vendorxml.enable=1 \
     ro.oplus.camera.defercap.support=1

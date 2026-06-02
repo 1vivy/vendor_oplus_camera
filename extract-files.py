@@ -129,6 +129,25 @@ def blob_fixup_opluscamera_oppo_component_safe(ctx, file, file_path, *args, tmp_
         manifest.write_text(data, encoding='utf-8')
 
 
+def blob_fixup_opluscamera_uses_library(ctx, file, file_path, *args, tmp_dir=None, **kwargs):
+    # The com.oplus.wrapper.* / OplusHeifWriter classes the app references live in
+    # oplus-framework.jar (BOOTCLASSPATH) on stock. We ship them instead as the
+    # off-bootclasspath shared library "oplus.camera.stubs" (oplus-camera-stubs.jar in
+    # /system_ext/framework, declared in privapp-permissions-oplus.xml). For the app's
+    # own classloader to resolve them, the app must declare <uses-library> for it.
+    if tmp_dir is None:
+        return
+
+    manifest = Path(tmp_dir) / 'AndroidManifest.xml'
+    data = manifest.read_text(encoding='utf-8') if manifest.exists() else ''
+    if not data or 'oplus.camera.stubs' in data:
+        return
+    entry = '        <uses-library android:name="oplus.camera.stubs" android:required="false"/>\n'
+    if '</application>' in data:
+        data = data.replace('</application>', entry + '    </application>', 1)
+        manifest.write_text(data, encoding='utf-8')
+
+
 def blob_fixup_securitypermission_safe_permissions(ctx, file, file_path, *args, tmp_dir=None, **kwargs):
     if tmp_dir is None:
         return
@@ -2750,6 +2769,7 @@ blob_fixups: blob_fixups_user_type = {
     'system_ext/priv-app/OplusCamera/OplusCamera.apk': blob_fixup()
         .call(blob_fixup_apktool_unpack_full)
         .call(blob_fixup_opluscamera_oppo_component_safe)
+        .call(blob_fixup_opluscamera_uses_library)
         .call(blob_fixup_oplus_camera_system_properties)
         .call(blob_fixup_oplus_camera_framework_shims)
         .apktool_pack()

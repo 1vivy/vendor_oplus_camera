@@ -12,6 +12,11 @@
      <library name="androidx.camera.extensions.impl"
         file="/system_ext/framework/androidx.camera.extensions.impl.jar"/>
 
+     <!-- OPlus camera framework wrapper stubs (com.oplus.wrapper.*, OplusHeifWriter...).
+          Off the bootclasspath; pulled into OplusCamera via <uses-library oplus.camera.stubs>. -->
+     <library name="oplus.camera.stubs"
+        file="/system_ext/framework/oplus-camera-stubs.jar"/>
+
      <!-- OPLUS appplatform -->
      <privapp-permissions package="com.oplus.appplatform">
         <permission name="android.permission.BLUETOOTH_PRIVILEGED"/>
