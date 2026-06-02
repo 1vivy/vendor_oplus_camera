@@ -2661,28 +2661,16 @@ def blob_fixup_oplus_camera_framework_shims(ctx, file, file_path, *args, tmp_dir
             fixed = _noop_smali_method(fixed, 'public final d(Lcom/oplus/camera/MyApplication;)V')
             fixed = _noop_smali_method(fixed, 'public final g()V')
 
-        if smali.match('*/v7/d$a.smali'):
-            fixed = re.sub(
-                r'(?m)^\.implements Lcom/oplus/wrapper/hardware/devicestate/DeviceStateManager\$DeviceStateCallback;\n\n?',
-                '',
-                fixed,
-            )
-
-        fixed = fixed.replace(
-            'Lcom/oplus/wrapper/hardware/devicestate/DeviceStateManager$DeviceStateCallback;',
-            'Ljava/lang/Object;',
-        )
-        fixed = fixed.replace(
-            'Lcom/oplus/wrapper/hardware/devicestate/DeviceStateManager;',
-            'Ljava/lang/Object;',
-        )
-        fixed = fixed.replace(
-            'Lcom/oplus/wrapper/hardware/devicestate/DeviceState;',
-            'Ljava/lang/Object;',
-        )
-
-        if smali.match('*/v7/d$a.smali'):
-            fixed = _noop_smali_method(fixed, 'public final onDeviceStateChanged(Ljava/lang/Object;)V')
+        # NOTE: do NOT blanket-replace com.oplus.wrapper.hardware.devicestate.* with
+        # java.lang.Object. oplus-camera-stubs now ships the full wrapper devicestate API
+        # (DeviceStateManager + DeviceStateManager$DeviceStateCallback + DeviceState) and
+        # com.oplus.devicestate.OplusDeviceStateManager, so OplusDeviceStateManagerCompat
+        # resolves against the stubs directly. The old lossy replace was keyed to a stale
+        # obfuscated name (v7/d$a); on builds where the class moved (e.g. o8/d$a in
+        # v6.070.71) it rewrote `.implements <callback>` into the illegal
+        # `.implements Ljava/lang/Object;` (IncompatibleClassChangeError) and turned the
+        # register/unregister call sites into Object.registerCallback (NoSuchMethodError).
+        # Leaving the wrapper refs intact + complete stubs is correct and obfuscation-proof.
 
         if smali.match('*/hk/d.smali'):
             fixed = _replace_smali_method(

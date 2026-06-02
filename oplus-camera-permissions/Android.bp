@@ -1,0 +1,15 @@
+// Code-less, platform-signed APK that defines the OPlus/OPPO component-safe permission
+// family normally declared by SecurityPermission.apk (which we cannot ship: it is
+// android.uid.system and bootloops). See AndroidManifest.xml for the rationale.
+android_app {
+    name: "OplusCameraSafePermissions",
+    srcs: [],
+    manifest: "AndroidManifest.xml",
+    sdk_version: "current",
+    certificate: "platform",
+    privileged: true,
+    system_ext_specific: true,
+    optimize: {
+        enabled: false,
+    },
+}

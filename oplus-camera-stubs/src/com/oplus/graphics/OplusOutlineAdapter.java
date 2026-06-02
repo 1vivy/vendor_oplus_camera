@@ -16,6 +16,12 @@ public class OplusOutlineAdapter {
         }
     }
 
+    public void setSmoothRoundRect(int left, int top, int right, int bottom, float radiusX, float radiusY) {
+        if (mOutline != null) {
+            mOutline.setRoundRect(left, top, right, bottom, radiusX);
+        }
+    }
+
     public void setSmoothRoundRect(Rect rect, float radius) {
         if (mOutline != null && rect != null) {
             mOutline.setRoundRect(rect, radius);

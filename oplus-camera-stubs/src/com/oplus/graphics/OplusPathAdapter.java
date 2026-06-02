@@ -23,6 +23,12 @@ public class OplusPathAdapter {
         }
     }
 
+    public void addSmoothRoundRect(RectF rect, float rx, float ry, float smooth, Path.Direction dir) {
+        if (mPath != null && rect != null) {
+            mPath.addRoundRect(rect, rx, ry, dir);
+        }
+    }
+
     public void addSmoothRoundRect(RectF rect, float[] radii, Path.Direction dir) {
         if (mPath != null && rect != null && radii != null) {
             mPath.addRoundRect(rect, radii, dir);

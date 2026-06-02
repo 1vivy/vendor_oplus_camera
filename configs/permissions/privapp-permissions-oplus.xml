@@ -2,13 +2,19 @@
 <permissions>
      <!-- OPLUS camera unit sdk adapter -->
      <library name = "com.oplus.camera.unit.sdk.adapter"
-        file = "/system_ext/framework/com.oplus.camera.unit.sdk.adapter.jar" />
+        file = "/system_ext/framework/com.oplus.camera.unit.sdk.adapter.jar"
+        dependency = "oplus.camera.stubs" />
 
-     <!-- OPLUS camera unit sdk -->
+     <!-- OPLUS camera unit sdk.
+          dependency=oplus.camera.stubs so the SDK's own classloader can resolve the
+          com.oplus.wrapper.* shims it loads reflectively (e.g. ApsAdapterLog ->
+          com.oplus.wrapper.os.Trace). Sibling shared libraries are otherwise isolated. -->
      <library name = "com.oplus.camera.unit.sdk"
-        file = "/system_ext/framework/com.oplus.camera.unit.sdk.jar" />
+        file = "/system_ext/framework/com.oplus.camera.unit.sdk.jar"
+        dependency = "oplus.camera.stubs" />
      <library name = "com.oppo.camera.unit.sdk"
-        file = "/system_ext/framework/com.oplus.camera.unit.sdk.jar" />
+        file = "/system_ext/framework/com.oplus.camera.unit.sdk.jar"
+        dependency = "oplus.camera.stubs" />
      <library name="androidx.camera.extensions.impl"
         file="/system_ext/framework/androidx.camera.extensions.impl.jar"/>
 
