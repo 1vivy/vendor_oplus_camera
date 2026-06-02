@@ -16,7 +16,14 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/permissions/oplus_google_lens_config.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/oplus_google_lens_config.xml \
     $(LOCAL_PATH)/configs/permissions/privapp-permissions-oplus.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-oplus.xml \
     $(LOCAL_PATH)/configs/framework/androidx.camera.extensions.impl.jar:$(TARGET_COPY_OUT_SYSTEM_EXT)/framework/androidx.camera.extensions.impl.jar \
-    $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml
+    $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml \
+    $(LOCAL_PATH)/configs/lib64/libOplusSecurity.so:$(TARGET_COPY_OUT_ODM)/lib64/libOplusSecurity.so
+
+# libOplusSecurity.so is dlopen'd by /odm/lib64/libAlgoProcess.so (the APS algo lib). It was
+# marked "[HAL-owned-by-device-tree]" and commented out of proprietary-files.txt, but the
+# infiniti device tree does not actually ship it, so libAlgoProcess failed its sphal dlopen and
+# the APS pipeline stalled. Vendor it here until the device tree provides it. (Blob is from the
+# OP15 odm dump; small/version-tolerant security wrapper.)
 
 # OPlus camera framework wrapper stubs (com.oplus.wrapper.*, OplusHeifWriter, etc.).
 # Shipped as a regular system_ext/framework shared library (NOT a boot jar) and pulled
@@ -27,6 +34,14 @@ PRODUCT_COPY_FILES += \
 # and scopes the wrapper classes to just the app that needs them.
 PRODUCT_PACKAGES += \
     oplus-camera-stubs
+
+# Defines the oplus/oppo *.COMPONENT_SAFE / *.safe.* permission family (normally from
+# SecurityPermission.apk, which is android.uid.system and bootloops — see camera-vendor.mk).
+# Without these defined, OplusCamera's launch-time bind to com.oneplus.gallery's
+# OplusPreTileDecodeService (requires oppo.permission.OPPO_COMPONENT_SAFE) is a fatal
+# SecurityException.
+PRODUCT_PACKAGES += \
+    OplusCameraSafePermissions
 
 # Gallery's ODNN retouch path dlopens QNN libraries by basename. Install the
 # OP15 QNN runtime in system_ext and place real copies in Gallery's native lib dir.
@@ -46,7 +61,7 @@ PRODUCT_PACKAGES += \
 
 # Properties
 PRODUCT_PRODUCT_PROPERTIES += \
-    persist.vendor.camera.privapp.list=* \
+    persist.vendor.camera.privapp.list=com.oplus.camera \
     persist.sys.camera.private.log.enable=debug,pre,mp \
     ro.com.google.lens.oem_camera_package=com.oplus.camera \
     ro.com.google.lens.oem_image_package=com.oneplus.gallery,com.oplus.screenshot \
