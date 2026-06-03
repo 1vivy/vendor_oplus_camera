@@ -15,6 +15,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/permissions/com.oplus.android-features.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/com.oplus.android-features.xml \
     $(LOCAL_PATH)/configs/permissions/oplus_google_lens_config.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/oplus_google_lens_config.xml \
     $(LOCAL_PATH)/configs/permissions/privapp-permissions-oplus.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-oplus.xml \
+    $(LOCAL_PATH)/configs/permissions/default-permissions-oneplus-gallery.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/default-permissions/default-permissions-oneplus-gallery.xml \
     $(LOCAL_PATH)/configs/framework/androidx.camera.extensions.impl.jar:$(TARGET_COPY_OUT_SYSTEM_EXT)/framework/androidx.camera.extensions.impl.jar \
     $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml \
     $(LOCAL_PATH)/configs/lib64/libOplusSecurity.so:$(TARGET_COPY_OUT_ODM)/lib64/libOplusSecurity.so
