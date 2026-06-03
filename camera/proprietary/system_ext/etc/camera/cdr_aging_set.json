@@ -1,0 +1,10 @@
+[
+{"mCameraId": 2, "mSensorMode": 2, "mCdrMinValue": 0, "mCdrMaxValue": 90, "mCdrStep":5, "mCdrThresh":30},
+{"mCameraId": 2, "mSensorMode": 7, "mCdrMinValue": 0, "mCdrMaxValue": 100, "mCdrStep":5, "mCdrThresh":30},
+{"mCameraId": 2, "mSensorMode": 10, "mCdrMinValue": 0, "mCdrMaxValue": 100, "mCdrStep":5, "mCdrThresh":30},
+{"mCameraId": 2, "mSensorMode": 24, "mCdrMinValue": 0, "mCdrMaxValue": 100, "mCdrStep":5, "mCdrThresh":30},
+{"mCameraId": 2, "mSensorMode": 31, "mCdrMinValue": 0, "mCdrMaxValue": 100, "mCdrStep":5, "mCdrThresh":30},
+{"mCameraId": 4, "mSensorMode": 2, "mCdrMinValue": 0, "mCdrMaxValue": 100, "mCdrStep":5, "mCdrThresh":30} 
+ 
+]
+ 
