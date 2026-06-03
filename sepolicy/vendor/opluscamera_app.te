@@ -1,6 +1,14 @@
 app_domain(opluscamera_app)
 net_domain(opluscamera_app)
 hal_client_domain(opluscamera_app, vendor_hal_dspmanager)
+# Camera HAL client: required so opluscamera_app can `find` IOfflineCameraService
+# (vendor.qti.hardware.camera.offlinecamera, co-hosted by the camera-provider daemon).
+# Without hal_camera_client membership the offline (ncs) streams the AutoHDR/fusion
+# snapshot path acquires never drain -> OEM HealthMonitor SIGABRT 'ncsUnreleased 16'.
+# A naked `allow ... find` fails the offline-service neverallow (the domain must JOIN the
+# attribute); hal_client_domain adds halclientdomain + hal_camera_client (CTS-clean on
+# Treble). Stock places opluscamera_app in hal_camera_client. (verified via setenforce 0)
+hal_client_domain(opluscamera_app, hal_camera)
 
 allow opluscamera_app adsprpcd_file:dir r_dir_perms;
 allow opluscamera_app public_adsprpcd_file:file r_file_perms;
@@ -57,5 +65,8 @@ dontaudit opluscamera_app vendor_hal_qspmhal_service:service_manager find;
 allow opluscamera_app vendor_hal_qspmhal_default:binder { call transfer };
 
 
-# Offline camera post-processing service is protected by hal_camera policy.
-# Do not mark this app as a hal_camera client; that trips appdomain neverallows.
+# Offline camera post-processing service (IOfflineCameraService) is protected by
+# hal_camera policy. opluscamera_app IS now a hal_camera_client (see hal_client_domain
+# at top) so it can `find` the service -- CTS-clean on Treble, matches stock. (The earlier
+# "do not mark as hal_camera client" note was wrong: the find-denial caused the AutoHDR
+# fusion path's offline streams to leak -> 'ncsUnreleased 16' watchdog abort.)

@@ -96,8 +96,16 @@ PRODUCT_PRODUCT_PROPERTIES += \
     persist.logd.log.load.vendor.qti.camera.provider-service_64.lower_limit=500 \
     persist.logd.log.load.vendor.qti.camera.provider-service_64.threshold=400000 \
     persist.logd.log.load.vendor.qti.camera.provider-service_64.upper_limit=1500 \
+    persist.sys.feature.localhdr_version=2 \
+    persist.sys.feature.hdr_vision_app=1 \
+    persist.sys.feature.uhdr.support=true \
+    persist.sys.feature.support.edrlistener=true \
+    persist.sys.feature.dolby_vision=1 \
+    persist.sys.feature.dolby_vision_app=1 \
 
 PRODUCT_VENDOR_PROPERTIES += \
+    ro.vendor.oplus.hdr.uniform=1 \
+    vendor.oplus.hdr.uniform.debug=1 \
     ro.camera.enableCamera1MaxZsl=1 \
     ro.vendor.oplus.camera.backCamSize=50MP+50MP+50MP \
     ro.vendor.oplus.camera.frontCamSize=32MP
