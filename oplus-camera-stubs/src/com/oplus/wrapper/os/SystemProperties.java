@@ -12,6 +12,10 @@ public final class SystemProperties {
         return android.os.SystemProperties.get(key, def);
     }
 
+    public static void set(String key, String val) {
+        android.os.SystemProperties.set(key, val);
+    }
+
     public static boolean getBoolean(String key, boolean def) {
         return android.os.SystemProperties.getBoolean(key, def);
     }
