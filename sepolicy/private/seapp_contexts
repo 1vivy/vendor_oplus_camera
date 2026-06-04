@@ -1,10 +1,13 @@
 # Camera
-# Match stock OOS (system_ext_seapp_contexts): the camera app + its extension
-# helpers land in the dedicated opluscamera_app domain via seinfo=oplus_app.
-# seinfo=oplus_app is asserted by mac_permissions.xml (this dir) against the OEM
-# signing cert. The APK MUST be signed with that cert (see mac_permissions.xml),
-# otherwise it falls back to a generic app domain and every opluscamera_app
-# allow silently fails.
-user=_app seinfo=oplus_app name=com.oplus.camera domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
-user=_app seinfo=oplus_app name=com.android.cameraextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
-user=_app seinfo=oplus_app name=com.android.oemextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+# The camera app + its extension helpers land in the dedicated opluscamera_app
+# domain. On this LOS build the APK is re-signed with the LOS PLATFORM key
+# (verified on-device: signatures=[b4addb29] -> seinfo=platform via
+# plat_mac_permissions.xml), NOT the OEM Oplus cert. So the match MUST be on
+# seinfo=platform. (The v9 "Lane A" change to seinfo=oplus_app regressed this:
+# the OEM cert is not present on the installed APK, so the app fell back to
+# platform_app and crashed on launch reading /proc/devinfo/ufs under Enforcing.)
+# If a future build ships the APK PRESIGNED with the OEM cert, switch these to
+# seinfo=oplus_app (mac_permissions.xml already maps that cert).
+user=_app seinfo=platform name=com.oplus.camera domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+user=_app seinfo=platform name=com.android.cameraextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+user=_app seinfo=platform name=com.android.oemextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
