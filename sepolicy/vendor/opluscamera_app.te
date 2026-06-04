@@ -94,15 +94,16 @@ binder_call(opluscamera_app, system_suspend_server)
 allow opluscamera_app system_suspend_hwservice:hwservice_manager find;
 allow opluscamera_app hal_system_suspend_service:service_manager find;
 
-# OEM camera AIDL services the camera app looks up at runtime. The types + their
-# service_contexts registrations are ALREADY provided by the platform sepolicy
-# (hardware/oplus/sepolicy/qti/vendor/{service.te,service_contexts} + the QCom
-# sm8850 vndr policy) — Lane A's local service.te/service_contexts were redundant
-# and caused duplicate-type compile errors, so they were removed. Here we only add
-# the app's find-allows, pointed at the REAL platform type names:
-#   - sendextcamcmd + camera_rfi register as hal_camera_service → already findable
-#     via opluscamera_app's hal_camera_client membership (above); no rule needed.
-#   - cammidasservice / oplus-aon / qti-aon are distinct types → explicit finds:
-allow opluscamera_app hal_oplus_cammidasservice_aidl_service:service_manager find;
-allow opluscamera_app hal_oplus_aon_aidl_service:service_manager find;
-allow opluscamera_app vendor_hal_camera_aon_service:service_manager find;
+# OEM camera AIDL services (sendextcamcmd, cammidasservice, camera.aon oplus+qti,
+# camera_rfi) — types + service_contexts are ALREADY provided by the platform
+# sepolicy (hardware/oplus/sepolicy/qti/vendor/ + the QCom sm8850 vndr policy), so
+# Lane A's local service.te/service_contexts were removed (they caused duplicate-type
+# errors). NO find-allows are added here on purpose:
+#   - sendextcamcmd + camera_rfi register as hal_camera_service → already findable via
+#     opluscamera_app's hal_camera_client membership (above).
+#   - cammidasservice / oplus-aon are hal_attribute_service-managed: the macro emits a
+#     neverallow restricting `find` to each service's registered *_client attribute, so
+#     granting opluscamera_app find is a neverallow violation (build-blocking) AND not
+#     stock-correct. SELinux is REFUTED as the no-JPEG cause (root measured Permissive),
+#     so these lookups are not on the critical path. If a real avc surfaces at runtime,
+#     scope it by adding opluscamera_app to the proper *_client attribute, not a raw find.
