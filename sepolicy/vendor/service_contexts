@@ -5,5 +5,6 @@
 vendor.oplus.hardware.sendextcamcmd.ISendExtCamCmdService/default    u:object_r:hal_sendextcamcmd_service:s0
 vendor.oplus.hardware.cammidasservice.IMIDASService/default          u:object_r:hal_oplus_cammidasservice_aidl_service:s0
 vendor.oplus.hardware.camera.aon.IAONService/default                 u:object_r:oplus_hal_aon_service:s0
-vendor.qti.hardware.camera.aon.IAONService/default                   u:object_r:vendor_hal_camera_aon_service:s0
+# vendor.qti.hardware.camera.aon.IAONService → vendor_hal_camera_aon_service: registered by the
+# platform QCom vndr service_contexts (sm8850); duplicate here = build error. Omitted on purpose.
 vendor.oplus.hardware.camera_rfi.ICameraRfiService/default           u:object_r:hal_camera_rfi_service:s0

@@ -13,8 +13,11 @@ type hal_oplus_cammidasservice_aidl_service, service_manager_type;
 # Always-on camera, OEM variant (vendor.oplus.hardware.camera.aon.IAONService)
 type oplus_hal_aon_service, service_manager_type;
 
-# Always-on camera, QTI variant (vendor.qti.hardware.camera.aon.IAONService)
-type vendor_hal_camera_aon_service, service_manager_type;
+# Always-on camera, QTI variant (vendor.qti.hardware.camera.aon.IAONService):
+# NOT declared here — vendor_hal_camera_aon_service is already defined + registered by the
+# platform QCom vndr sepolicy (device/qcom/sepolicy_vndr/sm8850/.../vendor/common/{service.te,
+# service_contexts}). Re-declaring it is a duplicate-type compile error. The find-allow for it
+# stays in opluscamera_app.te (references the platform type).
 
 # Camera RFI service (vendor.oplus.hardware.camera_rfi.ICameraRfiService)
 type hal_camera_rfi_service, service_manager_type;
