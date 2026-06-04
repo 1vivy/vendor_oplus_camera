@@ -18,8 +18,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/permissions/default-permissions-oneplus-gallery.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/default-permissions/default-permissions-oneplus-gallery.xml \
     $(LOCAL_PATH)/configs/compatconfig/oplus-gallery-receiver-compat-config.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/compatconfig/oplus-gallery-receiver-compat-config.xml \
     $(LOCAL_PATH)/configs/framework/androidx.camera.extensions.impl.jar:$(TARGET_COPY_OUT_SYSTEM_EXT)/framework/androidx.camera.extensions.impl.jar \
-    $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml \
-    $(LOCAL_PATH)/configs/camxoverridesettings.txt:$(TARGET_COPY_OUT_VENDOR)/etc/camera/camxoverridesettings.txt
+    $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml
 
 # libOplusSecurity.so is dlopen'd by /odm/lib64/libAlgoProcess.so (the APS algo lib). It was
 # marked "[HAL-owned-by-device-tree]" and commented out of proprietary-files.txt, but the
@@ -113,7 +112,6 @@ PRODUCT_VENDOR_PROPERTIES += \
     ro.vendor.oplus.hdr.uniform=1 \
     vendor.oplus.hdr.uniform.debug=1 \
     ro.oplus.fusionlight=true \
-    persist.vendor.camera.setHDRMode=1 \
     ro.camera.enableCamera1MaxZsl=1 \
     ro.vendor.oplus.camera.backCamSize=50MP+50MP+50MP \
     ro.vendor.oplus.camera.frontCamSize=32MP
