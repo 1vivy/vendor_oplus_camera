@@ -97,6 +97,7 @@
 /(vendor|odm)/lib(64)?/libalgo\.bokeh\.so    u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libAlgoProcess\.so    u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libalog\.so    u:object_r:same_process_hal_file:s0
+/(vendor|odm)/lib(64)?/libalogencrypt\.so    u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libapsultrahdr\.so    u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libarcsoft_tfm\.so    u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libAncHumBokeh\.so    u:object_r:same_process_hal_file:s0
