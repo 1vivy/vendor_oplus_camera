@@ -19,13 +19,18 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/compatconfig/oplus-gallery-receiver-compat-config.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/compatconfig/oplus-gallery-receiver-compat-config.xml \
     $(LOCAL_PATH)/configs/framework/androidx.camera.extensions.impl.jar:$(TARGET_COPY_OUT_SYSTEM_EXT)/framework/androidx.camera.extensions.impl.jar \
     $(LOCAL_PATH)/configs/sysconfig/hiddenapi-package-oplus-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/hiddenapi-package-oplus-whitelist.xml \
-    $(LOCAL_PATH)/configs/lib64/libOplusSecurity.so:$(TARGET_COPY_OUT_ODM)/lib64/libOplusSecurity.so
+    $(LOCAL_PATH)/configs/camxoverridesettings.txt:$(TARGET_COPY_OUT_VENDOR)/etc/camera/camxoverridesettings.txt
 
 # libOplusSecurity.so is dlopen'd by /odm/lib64/libAlgoProcess.so (the APS algo lib). It was
 # marked "[HAL-owned-by-device-tree]" and commented out of proprietary-files.txt, but the
 # infiniti device tree does not actually ship it, so libAlgoProcess failed its sphal dlopen and
 # the APS pipeline stalled. Vendor it here until the device tree provides it. (Blob is from the
 # OP15 odm dump; small/version-tolerant security wrapper.)
+# Shipped via a Soong cc_prebuilt_library_shared (Android.bp, installs to /odm/lib64) instead of
+# PRODUCT_COPY_FILES: the full-image build's check-non-elf-file-timestamps gate rejects ELF
+# binaries copied via PRODUCT_COPY_FILES (must use cc_prebuilt_library_shared).
+PRODUCT_PACKAGES += \
+    libOplusSecurity
 
 # OPlus camera framework wrapper stubs (com.oplus.wrapper.*, OplusHeifWriter, etc.).
 # Shipped as a regular system_ext/framework shared library (NOT a boot jar) and pulled
@@ -102,10 +107,13 @@ PRODUCT_PRODUCT_PROPERTIES += \
     persist.sys.feature.support.edrlistener=true \
     persist.sys.feature.dolby_vision=1 \
     persist.sys.feature.dolby_vision_app=1 \
+    persist.camera.override_preview_hdr_support=1 \
 
 PRODUCT_VENDOR_PROPERTIES += \
     ro.vendor.oplus.hdr.uniform=1 \
     vendor.oplus.hdr.uniform.debug=1 \
+    ro.oplus.fusionlight=true \
+    persist.vendor.camera.setHDRMode=1 \
     ro.camera.enableCamera1MaxZsl=1 \
     ro.vendor.oplus.camera.backCamSize=50MP+50MP+50MP \
     ro.vendor.oplus.camera.frontCamSize=32MP

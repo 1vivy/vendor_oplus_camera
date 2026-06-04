@@ -1,0 +1,1 @@
+setHDRMode=1
