@@ -2,7 +2,11 @@
 ## are from OnePlus 15 (OxygenOS 16 CPH2745_11_A.01)
 
 # Camera
-my_product/app/OplusCamera/OplusCamera.apk:system_ext/priv-app/OplusCamera/OplusCamera.apk;OVERRIDES=Camera2,GoogleCameraGo
+# PRESIGNED: keep the original Oplus signature (serial F2EEFCD200C718B9, CN=AndroidTeam
+# O=Oplus). Required so mac_permissions.xml maps it to seinfo=oplus_app -> the app lands
+# in the opluscamera_app SELinux domain (see sepolicy/private/{seapp_contexts,mac_permissions.xml}).
+# Re-signing with the LOS build key would break that cert match.
+my_product/app/OplusCamera/OplusCamera.apk:system_ext/priv-app/OplusCamera/OplusCamera.apk;PRESIGNED;OVERRIDES=Camera2,GoogleCameraGo
 my_stock/priv-app/OppoGallery2/OppoGallery2.apk:system_ext/priv-app/OppoGallery2/OppoGallery2.apk
 my_product/lib64/libAPSClient-cmd-jni.so:system_ext/lib64/libAPSClient-cmd-jni.so;DISABLE_CHECKELF
 my_product/lib64/libAPSClient-jni.so:system_ext/lib64/libAPSClient-jni.so;DISABLE_CHECKELF

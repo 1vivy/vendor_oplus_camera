@@ -1,0 +1,9 @@
+# OEM camera AIDL service registrations. Interface strings + types copied
+# verbatim from stock vendor_service_contexts (OOS 16.0.7.201). The vendor HAL
+# rc/init files register these; the camera app needs service_manager find
+# (see opluscamera_app.te in this dir).
+vendor.oplus.hardware.sendextcamcmd.ISendExtCamCmdService/default    u:object_r:hal_sendextcamcmd_service:s0
+vendor.oplus.hardware.cammidasservice.IMIDASService/default          u:object_r:hal_oplus_cammidasservice_aidl_service:s0
+vendor.oplus.hardware.camera.aon.IAONService/default                 u:object_r:oplus_hal_aon_service:s0
+vendor.qti.hardware.camera.aon.IAONService/default                   u:object_r:vendor_hal_camera_aon_service:s0
+vendor.oplus.hardware.camera_rfi.ICameraRfiService/default           u:object_r:hal_camera_rfi_service:s0

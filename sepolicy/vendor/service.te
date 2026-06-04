@@ -1,0 +1,20 @@
+# OEM camera AIDL service types. These are owned by the OnePlus vendor/odm
+# partition on stock (defined in the prebuilt vendor CIL). The LOS port rebuilds
+# the vendor partition from source, so the types must be declared here, or any
+# allow/service_contexts rule that references them fails to compile.
+# Type names verified against stock vendor_service_contexts (OOS 16.0.7.201).
+
+# OEM ext-cam command relay (vendor.oplus.hardware.sendextcamcmd.ISendExtCamCmdService)
+type hal_sendextcamcmd_service, service_manager_type;
+
+# Thermal/perf MIDAS service (vendor.oplus.hardware.cammidasservice.IMIDASService)
+type hal_oplus_cammidasservice_aidl_service, service_manager_type;
+
+# Always-on camera, OEM variant (vendor.oplus.hardware.camera.aon.IAONService)
+type oplus_hal_aon_service, service_manager_type;
+
+# Always-on camera, QTI variant (vendor.qti.hardware.camera.aon.IAONService)
+type vendor_hal_camera_aon_service, service_manager_type;
+
+# Camera RFI service (vendor.oplus.hardware.camera_rfi.ICameraRfiService)
+type hal_camera_rfi_service, service_manager_type;

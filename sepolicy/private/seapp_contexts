@@ -1,2 +1,10 @@
 # Camera
-user=_app seinfo=platform name=com.oplus.camera domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+# Match stock OOS (system_ext_seapp_contexts): the camera app + its extension
+# helpers land in the dedicated opluscamera_app domain via seinfo=oplus_app.
+# seinfo=oplus_app is asserted by mac_permissions.xml (this dir) against the OEM
+# signing cert. The APK MUST be signed with that cert (see mac_permissions.xml),
+# otherwise it falls back to a generic app domain and every opluscamera_app
+# allow silently fails.
+user=_app seinfo=oplus_app name=com.oplus.camera domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+user=_app seinfo=oplus_app name=com.android.cameraextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all
+user=_app seinfo=oplus_app name=com.android.oemextensions domain=opluscamera_app type=opluscamera_app_data_file levelFrom=all

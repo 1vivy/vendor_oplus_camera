@@ -69,3 +69,20 @@ cc_prebuilt_library_shared {
     },
     check_elf_files: false,
 }
+
+// libOplusSecurity.so is dlopen'd by /odm/lib64/libAlgoProcess.so (the APS algo lib).
+// Shipped as a proper Soong prebuilt (NOT PRODUCT_COPY_FILES) because the full-image
+// build's check-non-elf-file-timestamps gate rejects ELF binaries in PRODUCT_COPY_FILES
+// ("use cc_prebuilt_binary / cc_prebuilt_library_shared instead"). Installs to /odm/lib64
+// (device_specific). file_contexts already labels it same_process_hal_file.
+cc_prebuilt_library_shared {
+    name: "libOplusSecurity",
+    stem: "libOplusSecurity",
+    srcs: ["configs/lib64/libOplusSecurity.so"],
+    compile_multilib: "64",
+    device_specific: true,
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+}
