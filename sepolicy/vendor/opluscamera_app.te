@@ -94,12 +94,15 @@ binder_call(opluscamera_app, system_suspend_server)
 allow opluscamera_app system_suspend_hwservice:hwservice_manager find;
 allow opluscamera_app hal_system_suspend_service:service_manager find;
 
-# OEM camera AIDL services the camera app looks up at runtime. Types declared in
-# service.te (this dir); registered in service_contexts (this dir). Stock makes
-# opluscamera_app a client of each; under Enforcing the app needs explicit find.
-# (Lane A control-plane port-delta — A-control-plane-diff.md Items 2 & 3.)
-allow opluscamera_app hal_sendextcamcmd_service:service_manager find;
+# OEM camera AIDL services the camera app looks up at runtime. The types + their
+# service_contexts registrations are ALREADY provided by the platform sepolicy
+# (hardware/oplus/sepolicy/qti/vendor/{service.te,service_contexts} + the QCom
+# sm8850 vndr policy) — Lane A's local service.te/service_contexts were redundant
+# and caused duplicate-type compile errors, so they were removed. Here we only add
+# the app's find-allows, pointed at the REAL platform type names:
+#   - sendextcamcmd + camera_rfi register as hal_camera_service → already findable
+#     via opluscamera_app's hal_camera_client membership (above); no rule needed.
+#   - cammidasservice / oplus-aon / qti-aon are distinct types → explicit finds:
 allow opluscamera_app hal_oplus_cammidasservice_aidl_service:service_manager find;
-allow opluscamera_app oplus_hal_aon_service:service_manager find;
+allow opluscamera_app hal_oplus_aon_aidl_service:service_manager find;
 allow opluscamera_app vendor_hal_camera_aon_service:service_manager find;
-allow opluscamera_app hal_camera_rfi_service:service_manager find;
