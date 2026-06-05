@@ -2719,6 +2719,39 @@ def blob_fixup_oplus_camera_framework_shims(ctx, file, file_path, *args, tmp_dir
             smali.write_text(fixed, encoding='utf-8')
 
 
+def blob_fixup_unit_sdk_oplus_identity(ctx, file, file_path, *args, tmp_dir=None, **kwargs):
+    # .201 BaseMode only stamps IS_OPLUS_PACKAGE when the client is *not* the
+    # system camera. Stock compensates elsewhere in the OPlus framework; Lineage
+    # does not, so rear SAT-Fusion configures as non-OPlus and hits -38. NOP only
+    # this local guard, leaving Util.isSystemCamera() behavior intact elsewhere.
+    if tmp_dir is None:
+        return
+
+    smali = Path(tmp_dir) / 'smali/com/oplus/ocs/camera/producer/mode/BaseMode.smali'
+    data = smali.read_text(encoding='utf-8') if smali.exists() else ''
+    old = (
+        '    invoke-static {}, Lcom/oplus/ocs/camera/common/util/Util;->isSystemCamera()Z\n'
+        '\n'
+        '    move-result p2\n'
+        '\n'
+        '    if-nez p2, :cond_25\n'
+        '\n'
+        '    invoke-virtual {p0, p3}, Lcom/oplus/ocs/camera/producer/mode/BaseMode;->useOplusCameraCase(Ljava/lang/String;)Z\n'
+    )
+    new = (
+        '    invoke-static {}, Lcom/oplus/ocs/camera/common/util/Util;->isSystemCamera()Z\n'
+        '\n'
+        '    move-result p2\n'
+        '\n'
+        '    nop\n'
+        '\n'
+        '    invoke-virtual {p0, p3}, Lcom/oplus/ocs/camera/producer/mode/BaseMode;->useOplusCameraCase(Ljava/lang/String;)Z\n'
+    )
+    fixed = data.replace(old, new, 1)
+    if fixed != data:
+        smali.write_text(fixed, encoding='utf-8')
+
+
 lib_fixups: lib_fixups_user_type = {
     # **lib_fixups already includes the clang RT ubsan and proto 3.9.1
     # fixups that were previously handled by the bash helper functions
@@ -2739,7 +2772,8 @@ blob_fixups: blob_fixups_user_type = {
         'system_ext/framework/com.oplus.camera.unit.sdk.jar',
         'system_ext/framework/com.oplus.camera.unit.sdk.adapter.jar',
     ): blob_fixup()
-        .apktool_unpack('patches/OplusCameraUnitSdk')
+        .call(blob_fixup_apktool_unpack_src)
+        .call(blob_fixup_unit_sdk_oplus_identity)
         .call(blob_fixup_oplus_camera_framework_shims)
         .apktool_pack()
         .stripzip(),
