@@ -2739,7 +2739,7 @@ blob_fixups: blob_fixups_user_type = {
         'system_ext/framework/com.oplus.camera.unit.sdk.jar',
         'system_ext/framework/com.oplus.camera.unit.sdk.adapter.jar',
     ): blob_fixup()
-        .apktool_unpack('patches/OplusCamera')
+        .apktool_unpack('patches/OplusCameraUnitSdk')
         .call(blob_fixup_oplus_camera_framework_shims)
         .apktool_pack()
         .stripzip(),
