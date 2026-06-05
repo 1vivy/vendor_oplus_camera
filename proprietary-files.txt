@@ -57,14 +57,8 @@ my_product/lib64/libst_mobile.so:system_ext/lib64/libst_mobile.so;DISABLE_CHECKE
 my_product/lib64/libst_sticker_jni.so:system_ext/lib64/libst_sticker_jni.so;FIX_SONAME;DISABLE_CHECKELF
 
 odm/lib64/libOplusSecurity.so;MODULE_SUFFIX=_oplus_camera;DISABLE_CHECKELF
-# ODM QNN runtime is owned by vendor/oneplus/infiniti. Duplicate only the app-lib
-# copies Gallery dlopens from its native lib dir.
-odm/lib64/libQnnHtp.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnHtp.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
-odm/lib64/libQnnHtpPrepare.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnHtpPrepare.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
-odm/lib64/libQnnHtpV81Stub.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnHtpV81Stub.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
-odm/lib64/libQnnHtpV81CalculatorStub.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnHtpV81CalculatorStub.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
-odm/lib64/libQnnSaver.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnSaver.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
-odm/lib64/libQnnSystem.so:system_ext/priv-app/OppoGallery2/lib/arm64/libQnnSystem.so;MODULE_SUFFIX=_oplus_gallery_app;DISABLE_CHECKELF
+# ODM QNN runtime is owned by vendor/oneplus/infiniti. Gallery app-lib copies
+# are installed by root Android.mk from that same source tree.
 system_ext/framework/androidx.camera.extensions.impl.jar
 
 # OP15 camera/QNN runtime assets

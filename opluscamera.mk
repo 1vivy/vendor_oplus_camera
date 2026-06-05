@@ -41,6 +41,13 @@ PRODUCT_PACKAGES += \
 # libOplusSecurity, QNN runtime, CameraX extensions, and Gallery app-lib QNN
 # duplicates are extraction-owned; see proprietary-files.txt. Do not commit
 # them as root-level prebuilts or LFS payloads.
+PRODUCT_PACKAGES += \
+    libQnnHtp_gallery_app_lib \
+    libQnnHtpPrepare_gallery_app_lib \
+    libQnnHtpV81Stub_gallery_app_lib \
+    libQnnHtpV81CalculatorStub_gallery_app_lib \
+    libQnnSaver_gallery_app_lib \
+    libQnnSystem_gallery_app_lib
 
 # Properties
 PRODUCT_PRODUCT_PROPERTIES += \
