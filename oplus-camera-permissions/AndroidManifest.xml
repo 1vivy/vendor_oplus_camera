@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Code-less, platform-signed APK that DEFINES the OPlus/OPPO "component safe" permission
+  family. On stock these are declared by SecurityPermission.apk, which we cannot ship here
+  because it (and SafeCenter/OplusAppPlatform) declare sharedUserId="android.uid.system"
+  and load into system_server, where their OEM-framework class gaps bootloop the device
+  (see camera/camera-vendor.mk). Permissions are registered at package-scan time from this
+  manifest regardless of whether any process runs, so a dormant code-less app is enough to
+  satisfy gates like com.oneplus.gallery's OplusPreTileDecodeService (requires
+  oppo.permission.OPPO_COMPONENT_SAFE) that OplusCamera binds at launch.
+
+  protectionLevel signature|privileged: privileged + privapp-allowlisted apps (OplusCamera,
+  OppoGallery2) are granted these; nothing third-party can hold them.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.lineageos.oplus.camerasafepermissions">
+
+    <permission android:name="oplus.permission.OPLUS_COMPONENT_SAFE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="oppo.permission.OPPO_COMPONENT_SAFE" android:protectionLevel="signature|privileged"/>
+
+    <permission android:name="com.oplus.permission.safe.AI_APP" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.APP_MANAGER" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.ASSISTANT" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.AUTHENTICATE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.CAMERA" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.CAR_LINK" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.CONNECTIVITY" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.IOT" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.LOG" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.MEDIA" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.PHONE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.PICTURE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.POWER" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.PRIVATE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.PROTECT" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.READ_COMMON" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.SAFE_MANAGER" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.SAU" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.SECURITY" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.SETTINGS" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.SETTINGS_SEARCH" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oplus.permission.safe.WINDOW" android:protectionLevel="signature|privileged"/>
+
+    <permission android:name="com.oppo.permission.safe.AI_APP" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oppo.permission.safe.AUTHENTICATE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oppo.permission.safe.CAMERA" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oppo.permission.safe.PRIVATE" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oppo.permission.safe.SAU" android:protectionLevel="signature|privileged"/>
+    <permission android:name="com.oppo.permission.safe.SECURITY" android:protectionLevel="signature|privileged"/>
+
+    <application
+        android:hasCode="false"
+        android:label="OplusCameraSafePermissions"
+        android:enabled="true"/>
+</manifest>

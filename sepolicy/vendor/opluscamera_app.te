@@ -1,27 +1,49 @@
 app_domain(opluscamera_app)
 net_domain(opluscamera_app)
+hal_client_domain(opluscamera_app, vendor_hal_dspmanager)
+# Camera HAL client: required so opluscamera_app can `find` IOfflineCameraService
+# (vendor.qti.hardware.camera.offlinecamera, co-hosted by the camera-provider daemon).
+# Without hal_camera_client membership the offline (ncs) streams the AutoHDR/fusion
+# snapshot path acquires never drain -> OEM HealthMonitor SIGABRT 'ncsUnreleased 16'.
+# A naked `allow ... find` fails the offline-service neverallow (the domain must JOIN the
+# attribute). Stock places opluscamera_app in hal_camera_client. (verified via setenforce 0)
+#
+# We add the two Treble attributes EXPLICITLY rather than via hal_client_domain(.., hal_camera):
+# that macro, under its not_full_treble() branch, also does `typeattribute opluscamera_app
+# hal_camera` (passthrough/in-process HAL). The RECOVERY sepolicy variant is built non-Treble,
+# so that branch fires there and merges hal_camera's allows (video_device/camera_device chr_file
+# rw + capabilities) onto opluscamera_app -- which is an appdomain -- tripping the app.te
+# neverallows (777/784/545) and FAILING the full-image/recovery build. (This is a PRE-EXISTING
+# breakage at HEAD 1301898: it fails identically with the macro even before this session's edits;
+# the project had only ever built single modules, never a full `bacon`/recovery image.)
+# halclientdomain + hal_camera_client are all that's needed for the offline-service find/call
+# (binder_call(hal_camera_client, hal_camera_server) + hal_attribute_service give the reachability);
+# the passthrough hal_camera type is NOT needed on a Treble device. Drop it to keep recovery clean.
+typeattribute opluscamera_app halclientdomain;
+typeattribute opluscamera_app hal_camera_client;
 
 allow opluscamera_app adsprpcd_file:dir r_dir_perms;
 allow opluscamera_app public_adsprpcd_file:file r_file_perms;
 
-allow opluscamera_app vendor_data_file:dir  { read open search write add_name remove_name create getattr rename setattr reparent rmdir };
-allow opluscamera_app vendor_data_file:file { read open write create unlink getattr rename setattr };
-allow opluscamera_app vendor_camera_update_data_file:file { read open write create unlink getattr rename setattr };
-allow opluscamera_app vendor_camera_update_data_file:dir { read open search write add_name remove_name create getattr rename setattr reparent rmdir };
+allow opluscamera_app vendor_data_file:dir  { read open search write add_name remove_name create getattr };
+allow opluscamera_app vendor_data_file:file { read open write create unlink getattr };
+allow opluscamera_app vendor_camera_update_data_file:file { read open write create unlink getattr };
+allow opluscamera_app vendor_camera_update_data_file:dir { read open search write add_name remove_name create getattr };
 allow opluscamera_app vendor_xdsp_device:file { read open write create unlink getattr };
-allow opluscamera_app vendor_xdsp_device:chr_file { read open write create unlink getattr ioctl };
 allow opluscamera_app vendor_xdsp_device:dir { read open search write add_name remove_name create getattr };
 allow opluscamera_app vendor_qdsp_device:file { read open write create unlink getattr };
 allow opluscamera_app vendor_qdsp_device:dir { read open search write add_name remove_name create getattr };
-allow opluscamera_app proc_ufs_file:file { read open write create getattr };
-allow opluscamera_app opluscamera_app_data_file:file { read open write create unlink getattr rename setattr };
-allow opluscamera_app opluscamera_app_data_file:dir { read open search write add_name remove_name create getattr rename setattr reparent rmdir };
+allow opluscamera_app proc_ufs_file:file r_file_perms;
+allow opluscamera_app opluscamera_app_data_file:file { read open write create unlink getattr };
+allow opluscamera_app opluscamera_app_data_file:dir { read open search write add_name remove_name create getattr };
 
 # FastRPC devices
 # vendor_qdsp_device: read-only only — neverallow on SM8750 blocks write/append
 # for non-HAL domains. The camera app only needs to open/read/ioctl for DSP
 # session setup; actual writes go through the HAL.
 allow opluscamera_app vendor_qdsp_device:chr_file { ioctl read };
+dontaudit opluscamera_app vendor_qdsp_device:chr_file open;
+dontaudit opluscamera_app vendor_xdsp_device:chr_file { getattr ioctl open read write create unlink };
 
 # selinuxfs
 allow opluscamera_app selinuxfs:file { read open };
@@ -48,8 +70,6 @@ allow opluscamera_app display_service:service_manager find;
 allow opluscamera_app surfaceflinger_service:service_manager find;
 allow opluscamera_app package_native_service:service_manager find;
 allow opluscamera_app permission_service:service_manager find;
-allow opluscamera_app vendor_hal_offlinecamera_service:service_manager find;
-allow opluscamera_app hal_system_suspend_service:service_manager find;
 dontaudit opluscamera_app vendor_hal_qspmhal_service:service_manager find;
 
 
@@ -57,5 +77,33 @@ dontaudit opluscamera_app vendor_hal_qspmhal_service:service_manager find;
 allow opluscamera_app vendor_hal_qspmhal_default:binder { call transfer };
 
 
-# Allow finding the offline camera service
-# allow opluscamera_app vendor_hal_offlinecamera_service:service_manager find;
+# Offline camera post-processing service (IOfflineCameraService) is protected by
+# hal_camera policy. opluscamera_app IS now a hal_camera_client (see hal_client_domain
+# at top) so it can `find` the service -- CTS-clean on Treble, matches stock. (The earlier
+# "do not mark as hal_camera client" note was wrong: the find-denial caused the AutoHDR
+# fusion path's offline streams to leak -> 'ncsUnreleased 16' watchdog abort.)
+
+# APS (in-app post-processing) routine talks to system_suspend during the offline-reprocess
+# snapshot path. Under Permissive an avc denial was observed for the APS thread issuing a
+# binder CALL to system_suspend; under Enforcing this would block the APS offline client.
+# NOTE: the full wakelock_use() macro is ILLEGAL here -- it grants self:capability2 block_suspend,
+# which the app.te:545 neverallow forbids for any appdomain (only bluetooth/network_stack/nfc
+# may hold capabilities). The observed denial is the binder CALL + the system_suspend service
+# find, NOT the kernel CAP_BLOCK_SUSPEND -- so grant ONLY those neverallow-safe pieces. (audit S1)
+binder_call(opluscamera_app, system_suspend_server)
+allow opluscamera_app system_suspend_hwservice:hwservice_manager find;
+allow opluscamera_app hal_system_suspend_service:service_manager find;
+
+# OEM camera AIDL services (sendextcamcmd, cammidasservice, camera.aon oplus+qti,
+# camera_rfi) — types + service_contexts are ALREADY provided by the platform
+# sepolicy (hardware/oplus/sepolicy/qti/vendor/ + the QCom sm8850 vndr policy), so
+# Lane A's local service.te/service_contexts were removed (they caused duplicate-type
+# errors). NO find-allows are added here on purpose:
+#   - sendextcamcmd + camera_rfi register as hal_camera_service → already findable via
+#     opluscamera_app's hal_camera_client membership (above).
+#   - cammidasservice / oplus-aon are hal_attribute_service-managed: the macro emits a
+#     neverallow restricting `find` to each service's registered *_client attribute, so
+#     granting opluscamera_app find is a neverallow violation (build-blocking) AND not
+#     stock-correct. SELinux is REFUTED as the no-JPEG cause (root measured Permissive),
+#     so these lookups are not on the critical path. If a real avc surfaces at runtime,
+#     scope it by adding opluscamera_app to the proper *_client attribute, not a raw find.

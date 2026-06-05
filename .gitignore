@@ -1,2 +1,19 @@
 
-camera/*
+# Auto-generated build scaffolding from extract-files.py — regenerated at build time
+camera/Android.bp
+camera/Android.mk
+camera/BoardConfigVendor.mk
+camera/camera-vendor.mk
+camera/proprietary/
+
+# Proprietary payload scratch dirs must stay extraction-only, never LFS/git payloads.
+configs/lib64/
+configs/framework/
+
+# Session scratch — backup APKs from bringup patching; never commit these
+camera/proprietary/system_ext/priv-app/OplusCamera/OplusCamera.apk.bak.*
+camera/proprietary/system_ext/priv-app/OplusCamera/OplusCamera.apk.preDeviceStateRepair
+
+# Scratch files from proprietary-files.txt tooling
+proprietary-files.txt.orig
+proprietary-files.txt.a17

@@ -1,0 +1,33 @@
+From: op15-bringup
+Subject: [PATCH] BaseMode: stamp IS_OPLUS_PACKAGE for the system camera too
+
+The OnePlus provider (libextensionlayer ExtensionPluginBase::InitPackageName,
+read at configure) only grants the Oplus SAT-Fusion config when the client is
+first-party Oplus: it sets gate *(plugin+0x36F0) = (com.oplus.packageName in
+oplus-list) OR (com.oplus.is.sdk.camera.package tag set). CustomPipelineSelect
+then picks OplusSATFusionOfflineReprocess (gate=1) vs the bare
+OplusSATOfflineReprocess (gate=0 -> configureStreams INTERNAL_ERROR / -38).
+
+OCS BaseMode only stamps IS_OPLUS_PACKAGE for NON-system-camera (3rd-party) apps
+(`if (!Util.isSystemCamera() && useOplusCameraCase()) set(IS_OPLUS_PACKAGE,{1})`),
+because stock relies on the OnePlus framework/cameraserver to first-party-tag the
+system camera. AOSP (LineageOS) cameraserver does not do that tagging, so the
+system camera (com.oplus.camera) is treated as non-Oplus and the SAT session
+fails to configure (-38). Make the system camera self-identify.
+
+smali (com/oplus/ocs/camera/producer/mode/BaseMode.smali, "configure" case):
+nop the `!Util.isSystemCamera()` guard so the system camera also stamps the tag
+(gated only by useOplusCameraCase(), true for rear_sat). Keeps isSystemCamera()
+== true elsewhere (so the CaptureResult metadata-pin path is unaffected).
+
+--- a/smali/com/oplus/ocs/camera/producer/mode/BaseMode.smali
++++ b/smali/com/oplus/ocs/camera/producer/mode/BaseMode.smali
+@@ (configure case, :pswitch_399)
+     invoke-static {}, Lcom/oplus/ocs/camera/common/util/Util;->isSystemCamera()Z
+     move-result p2
+-    if-nez p2, :cond_3ae
++    nop
+     invoke-virtual {p0, p3}, Lcom/oplus/ocs/camera/producer/mode/BaseMode;->useOplusCameraCase(Ljava/lang/String;)Z
+     move-result p2
+     if-eqz p2, :cond_3ae
+     sget-object p2, Lcom/oplus/ocs/camera/metadata/UConfigureKeys;->IS_OPLUS_PACKAGE:Lcom/oplus/ocs/camera/metadata/RequestKey;
