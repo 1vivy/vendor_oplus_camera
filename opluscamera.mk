@@ -21,9 +21,22 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/init/init.oplus.camera_rus.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.oplus.camera_rus.rc
 
 # Properties
+# v2.0 SDR-preview workaround (port of dirty-work af344d3, supersedes c45f452 smali form).
+# The .201 app puts the preview on a BT2020_HLG SurfaceView w/ 5.0 HDR/SDR headroom
+# (PreviewHDRControl); LOS's sRGB panel has no HLG->SDR tonemap path -> preview ~5x
+# over-exposed (the JPEG is fine, tonemapped provider-side). Force the preview-HDR
+# capability OFF so the SurfaceView stays sRGB (numHdrLayers->0). The override is honored
+# ONLY when override_enable=true; override_enable is read solely by PreviewHDRControl, so
+# no other side effects. NOTE: OOS's static config does NOT set this override prop (verified
+# absent in dump300_full) — OOS leaves it default since it HAS the HDR display path. The prior
+# "sync OOS 16.0.8.300 HDR props" (dd3ca87) introduced =1 with NO override_enable -> inert.
+# The HDR *feature* props below (dolby_vision*/hdr_vision_app/localhdr_version/edrlistener/
+# uhdr.support) ARE in the OOS baseline (dump300 build.prop) -> kept as-is. LOS adds this
+# override to force the preview capability off (the one piece OOS doesn't need).
 PRODUCT_PRODUCT_PROPERTIES += \
     persist.vendor.camera.privapp.list=com.oplus.camera \
-    persist.camera.override_preview_hdr_support=1 \
+    persist.camera.override_enable=true \
+    persist.camera.override_preview_hdr_support=false \
     persist.sys.feature.dolby_vision=1 \
     persist.sys.feature.dolby_vision_app=1 \
     persist.sys.feature.hdr_vision_app=1 \
